@@ -24,15 +24,31 @@ export const crearCliente = async (req, res) => {
 };
 
 export const obtenerClientes = async (req, res) => {
-  const clientes = await Cliente.findAll();
-  res.json(clientes);
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ error: "Solo los administradores pueden realizar esta operación" });
+    }
+    const clientes = await Cliente.findAll();
+    res.json(clientes);
+  } catch (error) {
+    console.error("Error al obtener clientes:", error);
+    res.status(500).json({ error: error.message });
+  }
 };
 
 export const obtenerClientePorId = async (req, res) => {
-  const cliente = await Cliente.findByPk(req.params.id);
-  cliente
-    ? res.json(cliente)
-    : res.status(404).json({ error: "Cliente no encontrado" });
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ error: "Solo los administradores pueden realizar esta operación" });
+    }
+    const cliente = await Cliente.findByPk(req.params.id);
+    cliente
+      ? res.json(cliente)
+      : res.status(404).json({ error: "Cliente no encontrado" });
+  } catch (error) {
+    console.error("Error al obtener cliente por ID:", error);
+    res.status(500).json({ error: error.message });
+  }
 };
 
 export const actualizarCliente = async (req, res) => {
